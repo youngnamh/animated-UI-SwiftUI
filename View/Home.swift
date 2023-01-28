@@ -53,20 +53,6 @@ struct Home: View {
             .overlay(content: {
                 DetailViewContent(item: item)
             })
-            // ** makes the expanded card go back to main page when tapped. Might want to take out later
-            // and add a back button
-            .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.2)){
-                    animateContent = false
-                }
-                // slight delay for finishing the naimate content
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
-                    withAnimation(.easeInOut(duration: 0.4)){
-                        expandCard = false
-                        moveCardDown = false
-                    }
-                }
-            }
     }
     
     @ViewBuilder
@@ -78,8 +64,64 @@ struct Home: View {
                 .scaleEffect(x: animateContent ? 1 : 0.0001, anchor: .leading)
                 .padding(.top,80)
             VStack(spacing: 30){
-                
+                CustomProgressView(value: 0.5, label: "Red")
+                CustomProgressView(value: 0.5, label: "Blue")
+                CustomProgressView(value: 0.5, label: "Green")
             }
+            .padding(15)
+            .background {
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .environment(\.colorScheme, .dark)
+            }
+            .opacity(animateContent ? 1 : 0)
+            .offset(y: animateContent ? 0 : 100)
+            //slight delay
+            .animation(.easeInOut(duration: 0.4).delay(animateContent ? 0.2 : 0), value: animateContent)
+            .padding(.top,30)
+            .padding(.horizontal,20)
+            .frame(maxHeight: .infinity,alignment: .top)
+            
+            HStack(spacing: 15){
+                Text("Start")
+                    .fontWeight(.semibold)
+                    .padding(.vertical,20)
+                    .padding(.horizontal,30)
+                    .background {
+                        Capsule()
+                            .fill(.white)
+                    }
+                    .onTapGesture {
+                        print("make this button do something")
+                    }
+                
+                Text("Go Back")
+                    .fontWeight(.semibold)
+                    .padding(.vertical,20)
+                    .padding(.horizontal,30)
+                    .background {
+                        Capsule()
+                            .fill(.white)
+                    }
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)){
+                            animateContent = false
+                        }
+                        // slight delay for finishing the naimate content
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
+                            withAnimation(.easeInOut(duration: 0.4)){
+                                expandCard = false
+                                moveCardDown = false
+                            }
+                        }
+                    }
+            }
+            .padding(.bottom,30)
+            .opacity(animateContent ? 1 : 0)
+            .offset(y: animateContent ? 0 : 100)
+            //slight delay
+            .animation(.easeInOut(duration: 0.4).delay(animateContent ? 0.25 : 0), value: animateContent)
+            
         }
         .padding(.horizontal,15)
         .frame(maxHeight: .infinity,alignment: .top)
@@ -181,7 +223,7 @@ struct Home: View {
                     
                     Rectangle()
                         .fill(.white)
-                        .frame(width: size.width * value)
+                        .frame(width: animateContent ? size.width * value : 0)
                 }
             }
             .frame(height: 8)
